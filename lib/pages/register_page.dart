@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../components/button.dart';
@@ -5,7 +6,8 @@ import '../components/text_field.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
-  const RegisterPage({super.key,required this.onTap});
+
+  const RegisterPage({super.key, required this.onTap});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -16,6 +18,50 @@ class _RegisterPageState extends State<RegisterPage> {
   final emailTextController = TextEditingController();
   final passwordTextController = TextEditingController();
   final confirmPasswordTextController = TextEditingController();
+
+  //sign user up
+  void signUp() async {
+    //show loading circle
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
+    //make sure password match
+    if (passwordTextController.text != confirmPasswordTextController.text) {
+      //pop loading circle
+      Navigator.pop(context);
+      //show error to user
+      displayMessage("Password doesn't match!");
+      return;
+    }
+
+    //try creating user
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailTextController.text,
+          password: passwordTextController.text);
+      //pop loading circle
+      if (context.mounted) Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      //pop loading circle
+      Navigator.pop(context);
+      //show error to user
+      displayMessage(e.code);
+    }
+  }
+
+  //display a dialog message
+  void displayMessage(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(message),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +85,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
 
                 //welcome back message
-
                 Text(
                   "Let's create an account for you!",
                   style: TextStyle(
@@ -52,7 +97,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
 
                 //email textfield
-
                 MyTextField(
                     controller: emailTextController,
                     hintText: 'Email',
@@ -63,7 +107,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
 
                 //password textfield
-
                 MyTextField(
                     controller: passwordTextController,
                     hintText: 'Password',
@@ -79,9 +122,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     hintText: 'Confirm Password',
                     obscureText: true),
 
-                //sign in button
+                //sign up button
                 MyButton(
-                  onTap: () {},
+                  onTap: signUp,
                   text: 'Sign Up',
                 ),
 
@@ -103,7 +146,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       width: 4,
                     ),
                     GestureDetector(
-                      onTap:widget.onTap,
+                      onTap: widget.onTap,
                       child: const Text(
                         "Login now",
                         style: TextStyle(
