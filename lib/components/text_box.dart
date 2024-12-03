@@ -4,8 +4,12 @@ class MyTextBox extends StatelessWidget {
   final String text;
   final String sectionName;
   final void Function()? onPressed;
-  const MyTextBox({super.key, required this.text, required this.sectionName,required this.onPressed});
 
+  const MyTextBox(
+      {super.key,
+      required this.text,
+      required this.sectionName,
+      required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +29,7 @@ class MyTextBox extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              //section
+              //section name
               Text(
                 sectionName,
                 style: TextStyle(color: Colors.black26),
@@ -39,11 +43,11 @@ class MyTextBox extends StatelessWidget {
                   color: Colors.black26,
                 ),
               ),
-
-              //text
-              Text(text)
             ],
           ),
+
+          //text
+          Text(text)
         ],
       ),
     );

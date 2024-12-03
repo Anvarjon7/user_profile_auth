@@ -25,17 +25,6 @@ class _HomePageState extends State<HomePage> {
     FirebaseAuth.instance.signOut();
   }
 
-  //navigate to profile page
-  void goToProfilePage() {
-    //pop menu drawer
-    Navigator.pop(context);
-    //go to profile page
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ProfilePage()),
-    );
-  }
-
   //post message
   void postMessage() {
     //only post if there is something in the textfield
@@ -53,7 +42,16 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-
+  //navigate to profile page
+  void goToProfilePage() {
+    //pop menu drawer
+    Navigator.pop(context);
+    //go to profile page
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ProfilePage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,10 +60,6 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("The Wall"),
         backgroundColor: Colors.blue,
-        actions: [
-          //sign out button
-          IconButton(onPressed: signOut, icon: Icon(Icons.logout))
-        ],
       ),
       body: Center(
         child: Column(

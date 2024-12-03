@@ -26,7 +26,6 @@ class MyDrawer extends StatelessWidget {
                   size: 64,
                 ),
               ),
-
               //home list title
               MyListTile(
                 text: 'H O M E',
@@ -42,6 +41,7 @@ class MyDrawer extends StatelessWidget {
               ),
             ],
           ),
+
           //logout list title
           Padding(
             padding: const EdgeInsets.only(bottom: 25.0),
