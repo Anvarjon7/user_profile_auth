@@ -15,14 +15,26 @@ class MyTextBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.blue[300],
+        color: Colors.white.withOpacity(0.5), //subtle blending
+        // gradient: LinearGradient(
+        //   colors: [
+        //     Colors.blue.shade300.withOpacity(0.7),
+        //     Colors.white.withOpacity(0.5),
+        //   ],
+        //   begin: Alignment.bottomRight,
+        //   end: Alignment.topLeft,
+        // ),
         borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      padding: const EdgeInsets.only(
-        left: 15,
-        bottom: 15,
-      ),
-      margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -32,22 +44,34 @@ class MyTextBox extends StatelessWidget {
               //section name
               Text(
                 sectionName,
-                style: TextStyle(color: Colors.black26),
+                style: const TextStyle(
+                  color: Colors.black45,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12,
+                ),
               ),
 
               //edit button
               IconButton(
                 onPressed: onPressed,
                 icon: Icon(
-                  Icons.settings,
-                  color: Colors.black26,
+                  Icons.edit,
+                  color: Colors.black45,
+                  size: 16,
                 ),
               ),
             ],
           ),
+          const SizedBox(height: 5),
 
           //text
-          Text(text)
+          Text(
+            text,
+            style: TextStyle(
+              color: Colors.black87,
+              fontSize: 14,
+            ),
+          ),
         ],
       ),
     );
