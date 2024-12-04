@@ -41,19 +41,19 @@ class _RegisterPageState extends State<RegisterPage> {
 
     //try creating the user
     try {
-
       //creating user
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailTextController.text,
-          password: passwordTextController.text,
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailTextController.text,
+        password: passwordTextController.text,
       );
       //after creating the user, create a new document in cloud firestore called Users
       FirebaseFirestore.instance
-      .collection("Users")
-      .doc(userCredential.user!.email)
-      .set({
-        'username' : emailTextController.text.split('@')[0], //initial username
-        'bio':'Empty bio...' //initial empty bio
+          .collection("Users")
+          .doc(userCredential.user!.email)
+          .set({
+        'username': emailTextController.text.split('@')[0], //initial username
+        'bio': 'Empty bio...' //initial empty bio
         //add any additional fields as needed
       });
 
