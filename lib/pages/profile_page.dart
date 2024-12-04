@@ -72,50 +72,73 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> editField(String field, String currentValue) async {
     String newValue = currentValue;
 
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: Text(
-          "Edit $field",
-          style: const TextStyle(color: Colors.white),
-        ),
-        content: TextField(
-          autofocus: true,
-          style: TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-              hintText: "Enter new $field",
-              hintStyle: TextStyle(color: Colors.grey)),
-          onChanged: (value) {
-            newValue = value;
-          },
-        ),
-        actions: [
-          // cancel button
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: Colors.white),
+    newValue = await showDialog<String>(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: Colors.grey[900],
+            title: Text(
+              "Edit $field",
+              style: const TextStyle(color: Colors.white),
             ),
-          ),
-
-          //save button
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(newValue),
-            child: const Text(
-              'Save',
+            content: TextField(
+              autofocus: true,
               style: TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: "Enter new $field",
+                hintStyle: TextStyle(color: Colors.grey),
+              ),
+              onChanged: (value) {
+                newValue = value;
+              },
+              controller: TextEditingController(text: currentValue),
             ),
-          ),
-        ],
-      ),
-    );
+            actions: [
+              // cancel button
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
 
-//update in firestore
+              //save button
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(newValue),
+                child: const Text(
+                  'Save',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ) ??
+        currentValue;
+
     if (newValue.trim().isNotEmpty && newValue != currentValue) {
-      //only update if there is something in the textfield
-      await usersCollection.doc(currentUser.email).update({field: newValue});
+      print('Updating field: $field');
+      print('New value: $newValue');
+      try {
+        // update Firestore based on the field type.
+        if (field == 'pitch') {
+          // if it's pitch, treat it as a list of strings.
+          final updatedPitchList =
+              newValue.split(',').map((e) => e.trim()).toList();
+          await usersCollection
+              .doc(currentUser.email)
+              .update({field: updatedPitchList});
+        } else {
+          // for other fields (name, surname, etc.), treat it as a single string.
+          await usersCollection
+              .doc(currentUser.email)
+              .update({field: newValue});
+        }
+
+        // refresh UI to show updated value.
+        setState(() {});
+      } catch (e) {
+        print("Error updating field: $e");
+      }
     }
   }
 
@@ -124,8 +147,12 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "TROOD. |Profile ",
-          style: TextStyle(color: Colors.black87),
+          "TROOD. | Profile ",
+          style: TextStyle(
+              color: Colors.black87,
+              fontSize: 25,
+              fontWeight: FontWeight.w500,
+             ),
         ),
         backgroundColor: Colors.white,
       ),

@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
         title: Text("The Wall"),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.blue[200],
       ),
       body: Center(
         child: Column(
