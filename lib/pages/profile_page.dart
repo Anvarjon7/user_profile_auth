@@ -68,10 +68,54 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  // validation for Name
+  bool validateName(String value) {
+    final regex = RegExp(r'^[A-Za-zА-Яа-яЁё\s-]{2,50}$');
+    return regex.hasMatch(value);
+  }
+
+// validation for Surname
+  bool validateSurname(String value) {
+    final regex = RegExp(r'^[A-Za-zА-Яа-яЁё\s-]{2,50}$');
+    return regex.hasMatch(value);
+  }
+
+// validation for Job Title
+  bool validateJobTitle(String value) {
+    final regex = RegExp(r'^[A-Za-zА-Яа-яЁё0-9\s]{1,100}$');
+    return regex.hasMatch(value);
+  }
+
+// validation for Phone Number
+  bool validatePhone(String value) {
+    final regex = RegExp(r'^\+[0-9]{10,15}$');
+    return regex.hasMatch(value);
+  }
+
+// validation for Address
+  bool validateAddress(String value) {
+    final regex = RegExp(r'^[A-Za-zА-Яа-яЁё0-9\s,.-]{1,200}$');
+    return regex.hasMatch(value);
+  }
+
+// validation for Pitch (with tag constraints)
+  bool validatePitch(String value) {
+    final tags = value.split(',').map((e) => e.trim()).toList();
+    if (tags.length > 10) return false; // Maximum 10 tags
+    for (var tag in tags) {
+      if (tag.length > 30 ||
+          !RegExp(r'^[A-Za-zА-Яа-яЁё0-9\s,.-]{1,30}$').hasMatch(tag)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   //edit field
   Future<void> editField(String field, String currentValue) async {
     String newValue = currentValue;
 
+    // showin a dialog to allow user to edit the field
     newValue = await showDialog<String>(
           context: context,
           builder: (context) => AlertDialog(
@@ -93,7 +137,7 @@ class _ProfilePageState extends State<ProfilePage> {
               controller: TextEditingController(text: currentValue),
             ),
             actions: [
-              // cancel button
+              // Cancel button
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text(
@@ -101,8 +145,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-
-              //save button
+              // Save button
               TextButton(
                 onPressed: () => Navigator.of(context).pop(newValue),
                 child: const Text(
@@ -115,29 +158,55 @@ class _ProfilePageState extends State<ProfilePage> {
         ) ??
         currentValue;
 
+    // if the new value is not empty and is different from the current value, validate and update
     if (newValue.trim().isNotEmpty && newValue != currentValue) {
-      print('Updating field: $field');
-      print('New value: $newValue');
-      try {
-        // update Firestore based on the field type.
-        if (field == 'pitch') {
-          // if it's pitch, treat it as a list of strings.
-          final updatedPitchList =
-              newValue.split(',').map((e) => e.trim()).toList();
-          await usersCollection
-              .doc(currentUser.email)
-              .update({field: updatedPitchList});
-        } else {
-          // for other fields (name, surname, etc.), treat it as a single string.
-          await usersCollection
-              .doc(currentUser.email)
-              .update({field: newValue});
-        }
+      bool isValid = true;
 
-        // refresh UI to show updated value.
-        setState(() {});
-      } catch (e) {
-        print("Error updating field: $e");
+      // validate based on the field
+      if (field == 'name') {
+        isValid = validateName(newValue);
+      } else if (field == 'surname') {
+        isValid = validateSurname(newValue);
+      } else if (field == 'phone') {
+        isValid = validatePhone(newValue);
+      } else if (field == 'address') {
+        isValid = validateAddress(newValue);
+      } else if (field == 'pitch') {
+        isValid = validatePitch(newValue);
+      } else if (field == 'jobTitle') {
+        isValid = validateJobTitle(newValue);
+      }
+
+      if (isValid) {
+        // proceed with updating the field
+        print('Updating field: $field');
+        print('New value: $newValue');
+        try {
+          if (field == 'pitch') {
+            final updatedPitchList =
+                newValue.split(',').map((e) => e.trim()).toList();
+            await usersCollection
+                .doc(currentUser.email)
+                .update({field: updatedPitchList});
+          } else {
+            await usersCollection
+                .doc(currentUser.email)
+                .update({field: newValue});
+          }
+
+          // refresh UI to show updated value.
+          setState(() {});
+        } catch (e) {
+          print("Error updating field: $e");
+        }
+      } else {
+        // show validation error message if not valid
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Invalid value for $field. Please check your input.'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }
@@ -149,10 +218,10 @@ class _ProfilePageState extends State<ProfilePage> {
         title: const Text(
           "TROOD. | Profile ",
           style: TextStyle(
-              color: Colors.black87,
-              fontSize: 25,
-              fontWeight: FontWeight.w500,
-             ),
+            color: Colors.black87,
+            fontSize: 25,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         backgroundColor: Colors.white,
       ),
