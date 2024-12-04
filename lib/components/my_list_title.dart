@@ -21,7 +21,7 @@ class MyListTile extends StatelessWidget {
           icon,
           color: Colors.black,
         ),
-        onTap:(){},
+        onTap:onTap,
         title: Text(text),
       ),
     );
